@@ -4,6 +4,6 @@ ADD target/*.jar app.jar
 
 VOLUME /tmp
 
-EXPOSE 80
+EXPOSE 86
 
 ENTRYPOINT ["java","-jar","app.jar"]
