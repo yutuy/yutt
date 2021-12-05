@@ -1,9 +1,9 @@
 FROM java:8
 
-ADD target/*.jar app.jar
+ADD target/*.jar yutt.jar
 
 VOLUME /tmp
 
 EXPOSE 80
 
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["java","-jar","yutt.jar"]
