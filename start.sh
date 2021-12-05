@@ -2,7 +2,7 @@ cd `dirname $0`                 #进入根目录
 
 proj_home=$PWD                  #工程根目录
 img_output=${image}          #生成镜像标签
-appname=app                   #容器名称
+appname=yutt                   #容器名称
 port=80                         #docker暴露端口
 
 #  mvn打包镜像
