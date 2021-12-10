@@ -4,6 +4,6 @@ ADD target/*.jar yutt.jar
 
 VOLUME /tmp
 
-EXPOSE 80
+EXPOSE 8080
 
 ENTRYPOINT ["java","-jar","yutt.jar"]

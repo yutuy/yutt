@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>随手礼</title>
+    <meta name="keywords" content="H+后台主题,后台bootstrap框架,会员中心主题,后台HTML,响应式后台">
+    <meta name="description" content="H+是一个完全响应式，基于Bootstrap3最新版本开发的扁平化主题，她采用了主流的左右两栏式布局，使用了Html5+CSS3等现代技术">
+
+    <link rel="shortcut icon" href="favicon.ico"> 
+    <link th:href="@{/static/css/bootstrap.min14ed.css?v=3.3.6}" rel="stylesheet">
+    <link th:href="@{/static/css/font-awesome.min93e3.css?v=4.4.0}" rel="stylesheet">
+	<link th:href="@{/static/css/plugins/bootstrap-table/bootstrap-table.min.css}" rel="stylesheet" />
+    <link th:href="@{/static/css/animate.min.css}" rel="stylesheet">
+    <link th:href="@{/static/css/style.min862f.css?v=4.1.0}" rel="stylesheet">
+	<link th:href="@{/static/css/plugins/toastr/toastr.min.css}" rel="stylesheet" />
+    <script th:src="@{/static/js/jquery.min.js?v=2.1.4}"></script>
+    <script th:src="@{/static/js/province.js}"></script>
+    <script th:src="@{/static/js/bootstrap.min.js?v=3.3.6}"></script>
+	<script th:src="@{/static/js/plugins/bootstrap-table/bootstrap-table.min.js}"></script>
+    <script th:src="@{/static/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js}"></script>
+	<script th:src="@{/static/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js}"></script>
+    <script th:src="@{/js/demo/bootstrap-table-demo.min.js}"></script>
+	<script th:src="@{/static/js/plugins/toastr/toastr.min.js}"></script>
+	<script th:src="@{/static/js/plugins/layer/laydate/laydate.js}"></script>
+	<script th:src="@{/static/js/alert.js}"></script>
+	<script th:inline="javascript">
+	/** web开发基本路径，初始化容器加载application中的server.context-path */
+	var contextPath=/*[[${application.contextPath}]]*/;
+	</script>
+	 
+</head>
+
+<body>
+	<div class="panel-body" style="padding-bottom:0px;">
+	<!-- <img src="http://localhost:8080/fh-web-train/file/Koala.jpg"> -->
+                  <div class="panel panel-default" style="margin-bottom: 0px;">
+		            <div class="panel-heading">查询条件</div>
+			            <div class="panel-body">
+			                <form id="formSearch" class="form-horizontal">
+			                   <div class="form-group">
+									<label class="col-sm-1 control-label" for="name">名称</label>
+									<div class="col-sm-3">
+										 <input type="text" class="form-control" id="giftName"/>
+									</div>
+									
+								</div>
+								<div class="form-group">
+									<label class="col-sm-1 control-label" for="">创建时间</label>
+									<input type="hidden" id="hello">
+									<div class="col-sm-3">
+										<input readonly class="form-control layer-date" placeholder="开始时间" id="start" name="startTime">
+									</div>
+									<div class="col-sm-3">
+										<input readonly class="form-control layer-date" placeholder="结束时间" id="end" name="endTime">
+									</div>
+									 <button type="button" id="btn_query" class="btn btn-primary">查询</button>
+								</div>
+			                </form>
+			        	</div>
+        			</div> 
+              	<div id="toolbar" class="btn-group">
+		            <button id="btn_add" type="button" class="btn btn-primary">
+		                <i class="fa fa-plus"></i>&nbsp;添加
+		            </button>
+		            <button id="btn_edit" type="button" class="btn btn-info">
+		                <i class="fa fa-pencil"></i> 编辑
+		            </button>
+		            <button id="btn_delete" type="button" class="btn btn-danger">
+		                <i class="fa fa-remove"></i>&nbsp;&nbsp;<span class="bold">删除</span>
+		            </button>
+	        	</div>
+		        <table id="tb_list"></table>
+    
+    <!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form class="form-horizontal" role="form" id="editForm">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+        <h4 class="modal-title" id="myModalLabel">随手礼</h4>
+      </div>
+      <div class="modal-body">
+       	 <input type="hidden" name="id" id="id"/>
+         <fieldset>
+             <legend>随手礼</legend>
+            <div class="form-group">
+               <label class="col-sm-2 control-label" for="giftName">名称</label>
+               <div class="col-sm-9">
+                  <input class="form-control" id="gName" type="text" required="" placeholder="名称"/>
+               </div>
+            </div>
+            
+            <div class="form-group">
+               <label class="col-sm-2 control-label" for="giftValue">价格</label>
+               <div class="col-sm-9">
+                  <input class="form-control" id="giftValue" type="text" required="" placeholder="价格"/>
+               </div>
+            </div>
+
+         </fieldset> 			
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关   闭</button>
+        <button type="submit" class="btn btn-primary" id="bth_save">保   存</button>
+      </div>
+     </form>
+    </div>
+  </div>
+   </div>
+    <script th:inline="javascript">
+        $(function () {
+            //1.初始化Table
+            var oTable = new TableInit();
+            oTable.Init();
+
+            //2.初始化Button的点击事件
+            var oButtonInit = new ButtonInit();
+            oButtonInit.Init();
+            
+            // 课程查询
+            $("#btn_query").click(function(){
+            	var name = $("#giftName").val();
+            	var startTime = $("#start").val();
+            	var endTime = $("#end").val();
+            	var stime = new Date(startTime.replace("-", "/").replace("-", "/"));
+            	var etime = new Date(endTime.replace("-", "/").replace("-", "/"));
+            	if(stime > etime){
+            		toastr.warning("开始时间不能大于结束时间！");
+            		return;
+            	}
+            	 $('#tb_list').bootstrapTable(  
+			              "refresh",  
+			              {  
+			                  url: contextPath + "/activity/gift/page",
+			                  queryParams:{name:name,startTime:startTime,endTime:endTime}
+			              } 
+			      );  
+            });
+            
+            // 保存
+            $("#editForm").submit(function(){
+            	var id = $("#id").val();
+            	var gName = $("#gName").val();
+            	var giftValue = $("#giftValue").val();
+            	var params = {id:id,name:gName,giftValue:giftValue}; 
+            	$.ajax({
+     			   type: "POST",
+     			   url: contextPath + "/activity/gift/save",
+     			   data: params,
+     			   dateType:"json",
+     			   success: function(result){
+     				   $('#tb_list').bootstrapTable(
+			              "refresh",  
+			              {
+			                  url:contextPath + "/activity/gift/page"
+			              }
+   				      );
+     				  $("#myModal").modal('hide');
+     				  toastr.success(result.msg);
+     			   },
+     			   complete:function(XMLHttpRequest, textStatus){
+     				 if (textStatus == "error") {
+     					toastr.error("新增异常！");
+     				 }
+     			  }
+     			});
+  			   return false;
+            });
+            
+           // 添加
+            $("#btn_add").click(function(){
+            	//表单初始化
+            	$("#id").val("");
+            	$("#gName").val("");
+            	$("#giftValue").val("");
+            	$("#myModal").modal('show');
+            });
+           
+         	// 编辑
+            $("#btn_edit").click(function(){
+    
+            	var row=$.map($("#tb_list").bootstrapTable('getSelections'),function(row){
+            		return row ;
+            	});
+            	
+            	if (row.length == 0) {
+            		toastr.warning("请选择要编辑的数据！");
+            		return;
+            	} else if (row.length != 1) {
+            		toastr.warning("只能编辑一个课程！");
+            		return;
+            	} else {
+					//表单初始化
+                	$("#id").val();
+                	$("#cName").val("");
+                	$("#giftValue").val("");
+            		$("#myModal").modal('show');
+            		var courseId = row[0].id;
+            	}
+            	
+            	var id = row[0].id;
+            	$.ajax({
+     			   type: "GET",
+     			   url:contextPath + "/activity/gift/selectById/" + id,
+     			   success: function(result){
+     				  $("#id").val(id);
+     				  $("#cName").val(result.name);
+     				  $("#giftValue").val(result.giftValue);
+     			   }
+     			});
+            	
+            });
+            
+            // 删除分类
+            $("#btn_delete").click(function(){
+            	var row=$.map($("#tb_list").bootstrapTable('getSelections'),function(row){
+            		return row ;
+            	});
+            	
+            	if (row.length == 0) {
+            		toastr.warning("请选择要删除的数据！");
+            		return;
+            	}
+
+            	Ewin.confirm({ message: "确认要删除选择的数据吗？" }).on(function(e){
+            		
+            		if (e) {
+	                	$.each(row, function(i, n){
+	                		  var url = contextPath + "v/gift/delete/" + row[i].id;
+	                		  $.ajax({
+	                			   type: "GET",
+	                			   url: url,
+	                			   success: function(result){
+	                				   toastr.success(result.msg);
+	                				   $('#tb_list').bootstrapTable(  
+	                				              "refresh",  
+	                				              {  
+	                				                  url: contextPath + "/activity/gift/page"
+	                				              }  
+	                				      );  
+	                			   }
+	                			});
+	                	});
+            		}
+            	})
+            })
+        });
+
+        var TableInit = function () {
+            var oTableInit = new Object();
+            //初始化Table
+            oTableInit.Init = function () {
+                $('#tb_list').bootstrapTable({
+                    url: contextPath + '/activity/gift/page',
+                    method: 'get',                      //请求方式（*）
+                    toolbar: '#toolbar',                //工具按钮用哪个容器
+                    striped: true,                      //是否显示行间隔色
+                    cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                    pagination: true,                   //是否显示分页（*）
+                    sortable: false,                     //是否启用排序
+                    sortOrder: "asc",                   //排序方式
+                    queryParamsType:'', 
+                    queryParams: oTableInit.queryParams,//传递参数（*）
+                    sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+                    pageNumber:1,                       //初始化加载第一页，默认第一页
+                    pageSize: 10,                       //每页的记录行数（*）
+                    pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+                    search: false,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+                    strictSearch: true,
+                    showColumns: true,                  //是否显示所有的列
+                    showRefresh: true,                  //是否显示刷新按钮
+                    minimumCountColumns: 2,             //最少允许的列数
+                    clickToSelect: true,                //是否启用点击选中行
+                                                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+                    uniqueId: "id",                     //每一行的唯一标识，一般为主键列
+                    showToggle:false,                    //是否显示详细视图和列表视图的切换按钮
+                    cardView: false,                    //是否显示详细视图
+                    detailView: false,                   //是否显示父子表
+                    columns: [{
+                        checkbox: true
+                    }, {
+                        field: 'id',
+                        title: '编号'
+                    },{
+                        field: 'name',
+                        title: '费用名称'
+                    },{
+                        field: 'giftValue',
+                        title: '价格'
+                    },{
+                        field: 'createTime',
+                        title: '创建时间'
+                    }]
+                });
+            };
+
+            //得到查询的参数
+            oTableInit.queryParams = function (params) {
+                var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+                	 pageNumber: params.pageNumber,    
+                     pageSize: params.pageSize,
+                     name: $("#giftName").val(),
+                     startTime : $("#start").val(),
+            		 endTime : $("#end").val()
+                };
+                return temp;
+            };
+            return oTableInit;
+        };
+
+
+        var ButtonInit = function () {
+            var oInit = new Object();
+            var postdata = {};
+
+            oInit.Init = function () {
+                //初始化页面上面的按钮事件
+            };
+
+            return oInit;
+        };
+        </script>
+  
+	<script type="text/javascript">
+	function laydateClean(){
+		window.location.href= contextPath + "/activity/gift/list";
+	}
+	
+	
+	</script>
+	<script>
+    laydate({
+    	elem: "#hello",
+    	event: "focus"
+    });
+    var start = {
+    	elem: "#start",
+    	format: "YYYY/MM/DD",
+    	//min: laydate.now(),
+    	max: "2099-06-16",
+    	istime: true,
+    	istoday: false,
+    	choose: function(datas) {
+    		end.min = datas;
+    		end.start = datas
+    	}
+    };
+    var end = {
+    	elem: "#end",
+    	format: "YYYY/MM/DD",
+    	min: laydate.now(),
+    	max: "2099-06-16",
+    	istime: true,
+    	istoday: false,
+    	choose: function(datas) {
+    		start.max = datas
+    	}
+    };
+    laydate(start);
+    laydate(end);
+    </script>
+    
+ </div>
+</body>
+</html>
