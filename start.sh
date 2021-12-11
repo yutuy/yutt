@@ -30,5 +30,5 @@ docker build -t $img_output .
 mkdir -p $PWD/logs
 chmod 777 $PWD/logs
 
-# 启动镜像  8086为工程的端口
+# 启动镜像  8086为工程的端口 【左边是宿主机的端口，右边是容器的端口】
 docker run -d --name $appname -p $port:8086 $img_output
