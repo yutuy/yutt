@@ -6,4 +6,4 @@ VOLUME /tmp
 
 EXPOSE 8080
 
-ENTRYPOINT ["java","-jar","yutt.jar"]
+ENTRYPOINT ["java","-jar",“yutt.jar”,"--spring.profiles.active=test","--server.port=8080"]
